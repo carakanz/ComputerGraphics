@@ -1,0 +1,1 @@
+glslangValidator -V C:\Users\carak\source\repos\Vulkan2\HW\HW1\SampleTriangle.frag -o C:\Users\carak\source\repos\Vulkan2\HW\HW1\vs.spv
