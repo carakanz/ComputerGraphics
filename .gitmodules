@@ -1,0 +1,6 @@
+[submodule "V-EZ/External/SPIRV-Cross"]
+	path = V-EZ/External/SPIRV-Cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git
+[submodule "V-EZ/External/glslang"]
+	path = V-EZ/External/glslang
+	url = https://github.com/KhronosGroup/glslang.git
