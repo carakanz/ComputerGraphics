@@ -52,7 +52,15 @@ bool Model::LoadFromFile(const std::string& filename, VkDevice device)
 
     // Load the model from disk.
     Assimp::Importer importer;
-    const auto* scene = importer.ReadFile(filename.c_str(), aiProcess_FlipWindingOrder | aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals);
+    const auto* scene = importer.ReadFile(filename.c_str(),
+        aiProcess_FlipWindingOrder |
+        aiProcess_Triangulate |
+        aiProcess_PreTransformVertices |
+        aiProcess_GenSmoothNormals |
+        aiProcess_FlipUVs |
+        aiProcess_GenUVCoords | 
+        aiProcess_TransformUVCoords
+        );
     if (!scene)
         return false;
     
@@ -84,6 +92,9 @@ bool Model::LoadFromFile(const std::string& filename, VkDevice device)
             // Get the vertex attributes.
             const auto& pos = mesh->mVertices[j];
             const auto& normal = mesh->mNormals[j];
+            const auto& UV_coord = mesh->mTextureCoords[0][j];
+
+            // std::cout << mesh->mVertices[j].x << " " << mesh->mVertices[j].y << " " << mesh->mVertices[j].z << " " << mesh->mTextureCoords[0][j].x << " " << mesh->mTextureCoords[0][j].y + 2 << "\n";
 
             // Fill the temporary vertex data vector.
             vertices.push_back(pos.x);
@@ -92,6 +103,8 @@ bool Model::LoadFromFile(const std::string& filename, VkDevice device)
             vertices.push_back(normal.x);
             vertices.push_back(normal.y);
             vertices.push_back(normal.z);
+            vertices.push_back(UV_coord.x);
+            vertices.push_back(UV_coord.y);
 
             // Apply vertex to bounding box.
             m_bbox.min = glm::min(m_bbox.min, glm::vec3(pos.x, pos.y, pos.z));
@@ -170,7 +183,7 @@ bool Model::LoadFromFile(const std::string& filename, VkDevice device)
         return false;
 #endif
     // Create VulkanEZ vertex input format.
-    VkVertexInputBindingDescription bindingDesc = { 0, sizeof(float) * 6, VK_VERTEX_INPUT_RATE_VERTEX };
+    VkVertexInputBindingDescription bindingDesc = { 0, sizeof(float) * 8, VK_VERTEX_INPUT_RATE_VERTEX };
     std::array<VkVertexInputAttributeDescription, 2> attribDesc = {
         VkVertexInputAttributeDescription{ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0 },
         VkVertexInputAttributeDescription{ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3 }
@@ -196,7 +209,7 @@ void Model::Draw(uint32_t instanceCount)
     vezCmdBindIndexBuffer(m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
     // Set the vertex input format.
-    vezCmdSetVertexInputFormat(m_vertexInputFormat);
+    //vezCmdSetVertexInputFormat(m_vertexInputFormat);
 
 #if 0
     // Draw each part.
